@@ -1,0 +1,4 @@
+import(gRbase, qpgraph, Rgraphviz)
+export(clique.var.test, clique.mean.test,
+       pathway.var.test, pathway.mean.test,
+       render.significant.cliques)
