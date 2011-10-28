@@ -17,7 +17,7 @@ pathway.mean.test <- function(exp1, exp2, dag, alpha, perm.num=10000) {
 
   exp1.num  <- nrow(exp1)
   exps      <- rbind(exp1, exp2)
-  exps.num  <- nrow(exp1) + nrow(exp1)
+  exps.num  <- nrow(exp1) + nrow(exp2)
 
   path.test <- .runPathwayVarTest(exp1, exp2, l$graph, alpha)
   cli.moral <- path.test$cli.moral
