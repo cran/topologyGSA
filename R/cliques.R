@@ -1,32 +1,26 @@
 clique.var.test <- function(exp1, exp2, dag, alpha) {
-  l <- .checkParams(exp1, exp2, dag)
-  exp1 <- l$exp1
-  exp2 <- l$exp2
-  dag  <- l$dag
-  
-  .runCliqueVarTest(exp1, exp2, dag, alpha)
+  l <- .procParams(exp1, exp2, dag)
+  .runCliqueVarTest(l$exp1, l$exp2, l$graph, alpha)
 }
 
 clique.mean.test <- function(exp1, exp2, dag, alpha, perm.num=1000) {
-  l <- .checkParams(exp1, exp2, dag)
+  l <- .procParams(exp1, exp2, dag)
   exp1 <- l$exp1
   exp2 <- l$exp2
-  dag  <- l$dag
 
   exp.all    <- rbind(exp1, exp2)
-  cli.test   <- .runCliqueVarTest(exp1, exp2, dag, alpha)
+  cli.test   <- .runCliqueVarTest(exp1, exp2, l$graph, alpha)
   check      <- cli.test$check
   cliques    <- cli.test$cliques
   clique.num <- length(cliques)
 
   alpha.obs  <- vector("numeric", clique.num)
   t.obs      <- vector("numeric", clique.num)
-  for (i in 1:clique.num) {
-    cli      <- unlist(cliques[i])
+  for (i in seq_len(clique.num)) {
+    cli      <- unlist(cliques[i]) #TODO: cliques[[i]] ?
     exp1.cli <- exp1[,cli]
     exp2.cli <- exp2[,cli]
 
-    
     if (length(cli) != 1) {
       if (check[i])
         r <- .mult.test(exp1.cli, exp2.cli, perm.num)
@@ -45,19 +39,24 @@ clique.mean.test <- function(exp1, exp2, dag, alpha, perm.num=1000) {
   list(alpha.obs=as.numeric(alpha.obs), cliques=cliques, check=check, graph=cli.test$graph, t.obs=t.obs)
 }
 
-.runCliqueVarTest <- function(exp1, exp2, dag, alpha) {
+.runCliqueVarTest <- function(exp1, exp2, graph, alpha) {
+  cliques <- graph$cli.tg$maxCliques
+  maxCliqueSize <- max(sapply(cliques, length))
+  if (nrow(exp1) <= maxCliqueSize)
+    stop("exp1 should have more than ", maxCliqueSize, " rows (samples)")
+  else if (nrow(exp2) <= maxCliqueSize)
+    stop("exp2 should have more than ", maxCliqueSize, " rows (samples)")
+
   cov <- .estimateCov(exp1, exp2)
 
-  pg         <- .processGraph(dag)
-  cliques    <- pg$cli.tg$maxCliques
   clique.num <- length(cliques)
 
   alpha.obs  <- rep(0,     clique.num)
   lambda.obs <- rep(0,     clique.num)
   check      <- rep(FALSE, clique.num)
 
-  for (i in 1:clique.num) {
-    cli <- unlist(cliques[i])
+  for (i in seq_along(cliques)) {
+    cli <- unlist(cliques[i]) #TODO: cliques[[i]] ?
     p   <- length(cli)
 
     s1.hat <- cov$s1[cli, cli]
@@ -81,5 +80,5 @@ clique.mean.test <- function(exp1, exp2, dag, alpha, perm.num=1000) {
       check[i] <- TRUE
   }
 
-  list(alpha.obs=alpha.obs, cliques=cliques, check=check, graph=pg$tg, lambda.obs=lambda.obs)
+  list(alpha.obs=alpha.obs, cliques=cliques, check=check, graph=graph$tg, lambda.obs=lambda.obs)
 }

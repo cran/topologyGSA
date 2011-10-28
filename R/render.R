@@ -1,4 +1,7 @@
 render.significant.cliques <- function(info) {
+  if (length(edges(info$graph)) == 0)
+    stop("cannot render a graph with no edges")
+
   g           <- layoutGraph(info$graph)
   significant <- info$cliques[info$check]
   pvalues     <- info$alpha.obs[info$check]
