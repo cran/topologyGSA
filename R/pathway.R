@@ -61,7 +61,7 @@ pathway.mean.test <- function(exp1, exp2, dag, alpha, perm.num=10000) {
   lambda.obs  <- nrow(exp1)*log(k1.det/k.det) + nrow(exp2)*log(k2.det/k.det)
   arcs        <- (sum(graph$adj.moral)/2) + ncol(exp1)
   lambda.theo <- qchisq(0.95, arcs)
-  alpha.obs   <- 2 * min(pchisq(lambda.obs, arcs), 1-pchisq(lambda.obs, arcs))
+  alpha.obs   <- 1 - pchisq(lambda.obs, arcs)
   check       <- alpha.obs <= alpha
 
   list(alpha.obs=alpha.obs, cli.moral=cliques, check=check, graph=graph$moral, lambda.obs=lambda.obs, lambda.theo=lambda.theo)

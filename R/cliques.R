@@ -74,7 +74,7 @@ clique.mean.test <- function(exp1, exp2, dag, alpha, perm.num=1000) {
     }
 
     lambda.obs[i] <- nrow(exp1)*log(s.det/s1.det) + nrow(exp2)*log(s.det/s2.det)
-    alpha.obs[i]  <- 2 * min(pchisq(lambda.obs[i], p*(p+1)/2), 1-pchisq(lambda.obs[i], p*(p+1)/2))
+    alpha.obs[i]  <- 1 - pchisq(lambda.obs[i], p*(p+1)/2)
 
     if (alpha.obs[i] <= alpha)
       check[i] <- TRUE
