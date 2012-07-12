@@ -1,13 +1,15 @@
 Package: topologyGSA
-Version: 1.1.0
+Version: 1.2.0
 Date: 2012-07-12
 Title: topologyGSA
 Author: Sofia Massa, Gabriele Sales
-Maintainer: Sofia Massa <massa@stats.ox.ac.uk>
+Maintainer: Gabriele Sales <gabriele.sales@unipd.it>
 Description: Package description.
-Depends: gRbase, qpgraph, fields, Rgraphviz
+Depends: gRbase, qpgraph, fields
+Suggests: Rgraphviz
 License: AGPL-3
 LazyLoad: yes
-Packaged: 2012-07-18 08:38:55 UTC; sales
+Packaged: 2013-02-21 15:18:23 UTC; border
+NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2012-07-18 14:10:51
+Date/Publication: 2013-03-01 15:06:49

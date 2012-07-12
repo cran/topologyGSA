@@ -1,4 +1,7 @@
 render.significant.cliques <- function(info) {
+  if (!require(Rgraphviz))
+    stop("library Rgraphviz is missing")
+
   if (length(edges(info$graph)) == 0)
     stop("cannot render a graph with no edges")
 
