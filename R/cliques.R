@@ -56,7 +56,7 @@ clique.mean.test <- function(exp1, exp2, dag, alpha, perm.num=1000) {
   check      <- rep(FALSE, clique.num)
 
   for (i in seq_along(cliques)) {
-    cli <- unlist(cliques[i]) #TODO: cliques[[i]] ?
+    cli <- unlist(cliques[i])
     p   <- length(cli)
 
     s1.hat <- cov$s1[cli, cli]
