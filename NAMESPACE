@@ -1,5 +1,4 @@
-import(gRbase, qpgraph)
-importFrom(RBGL, maxClique)
+import(gRbase, qpgraph, fields)
 export(clique.var.test, clique.mean.test,
        pathway.var.test, pathway.mean.test,
        render.significant.cliques)

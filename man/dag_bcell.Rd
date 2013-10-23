@@ -3,8 +3,8 @@
 \title{DAG representation of the B cell receptor signaling pathway }
 \description{
 The B cell receptor signaling pathway (BCR) converted to a DAG. In case of nodes with multiple genes, the most differentially expressed
-between groups of patients defined in exp1 (acute lymphocytic leukemia patients
- with  BCR/ABL gene rearrangement) and  exp2 (acute lymphocytic leukemia patients
+between groups of patients defined in y1 (acute lymphocytic leukemia patients
+ with  BCR/ABL gene rearrangement) and y2 (acute lymphocytic leukemia patients
  with  BCR/ABL gene rearrangement) matrices.
 
 Chiaretti S., Li X., Gentleman R., Vitale A., Wang K.S., Mandelli F., Fo R., Ritz J. (2005) Gene expression

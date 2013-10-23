@@ -1,4 +1,4 @@
-render.significant.cliques <- function(info) {
+render.significant.cliques <- function(info, alpha=0.05) {
   if (!require(Rgraphviz))
     stop("library Rgraphviz is missing")
 
@@ -6,8 +6,9 @@ render.significant.cliques <- function(info) {
     stop("cannot render a graph with no edges")
 
   g           <- layoutGraph(info$graph)
-  significant <- info$cliques[info$check]
-  pvalues     <- info$alpha.obs[info$check]
+  check <- info$p.value < alpha
+  significant <- info$cliques[check]
+  pvalues     <- info$p.value[check]
 
   if (length(significant)) {
     nodes <- unique(unlist(significant))

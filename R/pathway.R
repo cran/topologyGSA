@@ -1,68 +1,121 @@
-pathway.var.test <- function(exp1, exp2, dag, alpha) {
-  l <- .procParams(exp1, exp2, dag)
-  exp1 <- l$exp1
-  exp2 <- l$exp2
+pathway.var.test <- function(y1, y2, dag, alpha,
+                             variance=FALSE, s1=NULL, s2=NULL) {
+  l  <- .procParams(y1, y2, dag)
+  y1 <- l$y1
+  y2 <- l$y2
 
-  res           <- .runPathwayVarTest(exp1, exp2, l$graph, alpha)
+  res           <- .runPathwayVarTest(y1, y2, l$graph, alpha, variance, s1, s2)
   ns            <- nodes(res$graph)
   res$cli.moral <- lapply(res$cli.moral, function(ixs) ns[ixs])
 
   res
 }
 
-pathway.mean.test <- function(exp1, exp2, dag, alpha, perm.num=10000) {
-  l <- .procParams(exp1, exp2, dag)
-  exp1 <- l$exp1
-  exp2 <- l$exp2
+pathway.mean.test <- function(y1, y2, dag, alpha,
+                              perm.num=10000, variance=TRUE, paired=FALSE) {
+  l  <- .procParams(y1, y2, dag)
+  y1 <- l$y1
+  y2 <- l$y2
 
-  exp1.num  <- nrow(exp1)
-  exps      <- rbind(exp1, exp2)
-  exps.num  <- nrow(exp1) + nrow(exp2)
+  y      <- rbind(y1, y2)
+  y.num  <- nrow(y1) + nrow(y2)
 
-  path.test <- .runPathwayVarTest(exp1, exp2, l$graph, alpha)
-  cli.moral <- path.test$cli.moral
-  check     <- path.test$check
+  l <- .runPathwayVarTest(y1, y2, l$graph, alpha, variance)
+  cli.moral <- l$cli.moral
+  var.equal <- l$var.equal
 
-  stat.obs  <- .hote(exp1, exp2, check, cli.moral)
+  if (paired) {
 
-  stat.perm <- vector("numeric", perm.num)
-  for (i in seq_len(perm.num)) {
-    ind          <- sample(exps.num)
-    exp1.perm    <- exps[ind[1:exp1.num],]
-    exp2.perm    <- exps[ind[(exp1.num+1):exps.num],]
-    stat.perm[i] <- .hote(exp1.perm, exp2.perm, check, cli.moral)
-  }
+    t.obs <- .hotePaired(y1, y2, cli.moral)
 
-  list(alpha.obs=sum(stat.perm >= stat.obs) / perm.num, graph=path.test$graph)
+    stat.perm <- vector("numeric", perm.num)
+    for (i in seq_len(perm.num)) {
+      stat.perm[i] <- .hotePaired(y1, sample(y2), cli.moral)
+    }
+
+    p.value <- sum(stat.perm >= t.obs) / perm.num
+
+    list(p.value=p.value,
+         cli.moral=cli.moral,
+         graph=l$graph,
+         t.value=t.obs)
+
+  } else {
+
+    s <- .hote(y1, y2, FALSE, cli.moral)
+
+    y1.num <- nrow(y1)
+    stat.perm <- vector("numeric", perm.num)
+    for (i in seq_len(perm.num)) {
+      ind          <- sample(y.num)
+      y1.perm      <- y[ind[1:y1.num],]
+      y2.perm      <- y[ind[(y1.num+1):y.num],]
+      stat.perm[i] <- .hote(y1.perm, y2.perm, FALSE, cli.moral)$t.obs
+    }
+
+    p.value <- sum(stat.perm >= s$t.obs) / perm.num
+
+    list(t.value=s$t.obs,
+         df.mean=s$df,
+         p.value=p.value,
+         lambda.value=l$lambda.value,
+         df.var=l$df,
+         p.value.var=l$p.value,
+         qchisq.value=l$qchisq.value,
+         var.equal=var.equal,
+         cli.moral=cli.moral,
+         graph=l$graph)
+    }
 }
 
-.runPathwayVarTest <- function(exp1, exp2, graph, alpha) {
+.runPathwayVarTest <- function(y1, y2, graph, alpha, variance,
+                               s1=NULL, s2=NULL) {
   cliques <- graph$cli.moral
   maxCliqueSize <- max(sapply(cliques, length))
-  if (nrow(exp1) <= maxCliqueSize)
-    stop("exp1 should have more than ", maxCliqueSize, " rows (samples)")
-  else if (nrow(exp2) <= maxCliqueSize)
-    stop("exp2 should have more than ", maxCliqueSize, " rows (samples)")
+  if (nrow(y1) <= maxCliqueSize)
+    stop("y1 should have more than ", maxCliqueSize, " rows (samples)")
+  else if (nrow(y2) <= maxCliqueSize)
+    stop("y2 should have more than ", maxCliqueSize, " rows (samples)")
 
-  cov <- .estimateCov(exp1, exp2)
+  if (is.null(s1) != is.null(s2)) {
+    stop("You must provide both s1 and s2 or neither.")
 
-  s1.hat <- qpIPF(cov$s1, cliques)
-  s2.hat <- qpIPF(cov$s2, cliques)
-  s.hat  <- qpIPF(cov$s,  cliques)
+  } else if (is.null(s1) && is.null(s2)) {
+    cov <- .estimateCov(y1, y2)
 
-  k1.hat <- solve(s1.hat)
-  k2.hat <- solve(s2.hat)
-  k.hat  <- solve(s.hat)
+    s1.hat <- qpIPF(cov$s1, cliques)
+    s2.hat <- qpIPF(cov$s2, cliques)
+    s.hat  <- qpIPF(cov$s,  cliques)
 
-  k1.det <- det(k1.hat)
-  k2.det <- det(k2.hat)
-  k.det  <- det(k.hat)
+  } else {
 
-  lambda.obs  <- nrow(exp1)*log(k1.det/k.det) + nrow(exp2)*log(k2.det/k.det)
-  arcs        <- (sum(graph$adj.moral)/2) + ncol(exp1)
-  lambda.theo <- qchisq(0.95, arcs)
-  alpha.obs   <- 1 - pchisq(lambda.obs, arcs)
-  check       <- alpha.obs <= alpha
+    s1.hat <- s1
+    s2.hat <- s2
+    s.hat  <- .estimateCovPool(nrow(y1), nrow(y2), s1, s2)
+  }
 
-  list(alpha.obs=alpha.obs, cli.moral=cliques, check=check, graph=graph$moral, lambda.obs=lambda.obs, lambda.theo=lambda.theo)
+  s1.det <- det(s1.hat)
+  s2.det <- det(s2.hat)
+  s.det  <- det(s.hat)
+
+  lambda.value <- nrow(y1)*log(s.det/s1.det) + nrow(y2)*log(s.det/s2.det)
+  df           <- (sum(graph$adj.moral)/2) + ncol(y1)
+  qchisq.value <- qchisq(1 - alpha, df)
+  p.value      <- 1 - pchisq(lambda.value, df)
+  var.equal    <- p.value <= alpha
+
+  res <- list(lambda.value=lambda.value,
+              p.value=p.value,
+              df=df,
+              qchisq.value=qchisq.value,
+              cli.moral=cliques,
+              var.equal=var.equal)
+
+  if (variance) {
+    res$s1 <- s1.hat
+    res$s2 <- s2.hat
+  }
+
+  res$graph <- graph$moral
+  return(res)
 }

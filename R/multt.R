@@ -1,16 +1,16 @@
-.mult.test <- function(exp1, exp2, perm.num) {
-  exp1.num <- nrow(exp1)
-  exps     <- rbind(exp1, exp2)
-  exps.num <- nrow(exps)
+.mult.test <- function(y1, y2, perm.num) {
+  y1.num <- nrow(y1)
+  y      <- rbind(y1, y2)
+  y.num  <- nrow(y)
 
-  t.obs <- .hote(exp1, exp2, FALSE)
+  t.obs <- .hote(y1, y2, FALSE)$t.obs
 
   stat.perm <- vector("numeric", perm.num)
   for (i in 1:perm.num) {
-    ind          <- sample(exps.num)
-    exp1.perm    <- exps[ind[1:exp1.num],]
-    exp2.perm    <- exps[ind[(exp1.num+1):exps.num],]
-    stat.perm[i] <- .hote(exp1.perm, exp2.perm, FALSE)
+    ind          <- sample(y.num)
+    y1.perm    <- y[ind[1:y1.num],]
+    y2.perm    <- y[ind[(y1.num+1):y.num],]
+    stat.perm[i] <- .hote(y1.perm, y2.perm, FALSE)$t.obs
   }
 
   alpha.obs <- sum(stat.perm >= t.obs) / perm.num

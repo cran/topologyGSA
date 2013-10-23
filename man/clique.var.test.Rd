@@ -6,11 +6,11 @@
 Test the equality of concentration matrices in two experimental conditions for all cliques of a pathway
 }
 \usage{
-clique.var.test(exp1,exp2,dag,alpha)
+clique.var.test(y1,y2,dag,alpha)
 }
 \arguments{
-\item{exp1}{a matrix  with n1 individuals (rows) in the first experimental condition and p genes (columns).}
-\item{exp2}{a matrix  with n2 individuals (rows) in the second experimental condition and p genes (columns).
+\item{y1}{a matrix  with n1 individuals (rows) in the first experimental condition and p genes (columns).}
+\item{y2}{a matrix  with n2 individuals (rows) in the second experimental condition and p genes (columns).
 The genes in the two experimental conditions must be the same.}
 \item{dag}{graphNEL object, a directed acyclic graph (DAG) corresponding to the pathway of interest. See package \code{gRbase} for more details.}
 \item{alpha}{significance level of the test.}
@@ -32,11 +32,11 @@ the intersection between the two gene sets.
 This function requires \code{gRBase} and \code{qpgraph} packages.
 }
 \value{
-\item{alpha.obs}{the observed value of the significance level.}
-\item{cliques}{the cliques where the test is performed.}
-\item{check}{logical, a vector with a TRUE for a significant clique and
+\item{p.value}{the observed value of the significance level.}
+\item{cliques}{the list of cliques where the test is performed.}
+\item{var.equal}{logical, a vector with a TRUE for a significant clique and
   a FALSE otherwise.}
-\item{lambda.obs}{the observed value of the statistic.}
+\item{lambda.var}{the observed value of the statistic.}
 \item{graph}{the triangulated and moral graphs.}
 }
 \author{M. Sofia Massa, Gabriele Sales}
@@ -50,5 +50,5 @@ This function requires \code{gRBase} and \code{qpgraph} packages.
 \examples{
 data(examples)
 
-clique.var.test(exp1, exp2, dag_bcell, 0.05)
+clique.var.test(y1, y2, dag_bcell, 0.05)
 }

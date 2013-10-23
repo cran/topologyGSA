@@ -5,15 +5,19 @@
 \description{Test the equality of concentration matrices in two experimental conditions for a pathway
 }
 \usage{
-pathway.var.test(exp1,exp2,dag,alpha)
+pathway.var.test(y1,y2,dag,alpha,variance=FALSE,s1=NULL,s2=NULL)
 }
 
 \arguments{
-\item{exp1}{a matrix with n1 individuals (rows) in the first experimental condition and p genes (columns).}
-\item{exp2}{a matrix with n2 individuals (rows) in the second experimental condition and p genes (columns).
+\item{y1}{a matrix with n1 individuals (rows) in the first experimental condition and p genes (columns).}
+\item{y2}{a matrix with n2 individuals (rows) in the second experimental condition and p genes (columns).
 The genes in the two experimental conditions must be the same.}
 \item{dag}{graphNEL object, directed acyclic graph (DAG) corresponding to the pathway of interest. See package \code{gRbase} for more details.}
 \item{alpha}{significance level of the test.}
+\item{variance}{logical flag. If \code{TRUE} the estimates of the
+  covariance matrices are included in the result.}
+\item{s1}{y1 covariance matrix estimation. }  
+\item{s2}{y2 covariance matrix estimation.  }
 }
 \details{The graph of a pathway is first converted into a DAG and then
   into a moral graph. The data is modelled with two Gaussian graphical
@@ -28,13 +32,16 @@ The genes in the two experimental conditions must be the same.}
   This function requires \code{gRBase} and \code{qpgraph} packages.
 }
 \value{
-\item{lambda.obs}{the observed value of the test statistic.}
-\item{lambda.theo}{the theoretical value of the test statistic.}
-\item{alpha.obs}{the observed value of the significance level of the test.}
-\item{cli.moral}{the cliques of the moral graph.}
-\item{check}{logical, a vector with a TRUE for a significant pathway and
-  a FALSE otherwise.}
+\item{lambda.value}{the observed value of the test statistic.}
+\item{qchisq.value}{the 1 - alpha quantile value of the null
+  distribution of the test statistic on the variance.}
+\item{p.value}{the observed value of the significance level of the test.}
+\item{cli.moral}{a list containing the cliques of the moral graph.}
+\item{var.equal}{logical flag. If TRUE variances are heteroschedastic.}
 \item{graph}{a graphNEL object representing the moral graph.}
+\item{df}{the degrees of freedom of the null distribution.}
+\item{s1}{if variance=TRUE, the estimate of y1 covariance.}
+\item{s2}{if variance=TRUE, the estimate of y2 covariance.}
 }
 
 \author{M. Sofia Massa, Gabriele Sales}
@@ -52,5 +59,5 @@ Lauritzen, S.L. (1996). Graphical models. Clarendon Press, Oxford.
 \examples{
 data(examples)
 
-pathway.var.test(exp1, exp2, dag_bcell, 0.05)
+pathway.var.test(y1, y2, dag_bcell, 0.05)
 }

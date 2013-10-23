@@ -1,33 +1,53 @@
-.hote <- function(exp1, exp2, exact, cliques=NULL) {
-  exp1.num <- nrow(exp1)
-  exp2.num <- nrow(exp2)
-  gene.num <- ncol(exp1)
+.hote <- function(y1, y2, exact, cliques=NULL) {
+  y1.num   <- nrow(y1)
+  y2.num   <- nrow(y2)
+  gene.num <- ncol(y1)
 
-  exp1.bar <- colMeans(exp1)
-  exp2.bar <- colMeans(exp2)
-  exp1.s   <- cov(exp1)
-  exp2.s   <- cov(exp2)
+  y1.bar <- colMeans(y1)
+  y2.bar <- colMeans(y2)
+  y1.s   <- cov(y1)
+  y2.s   <- cov(y2)
 
-  exp.diff <- exp1.bar - exp2.bar
+  y.diff <- y1.bar - y2.bar
   if (!is.null(cliques)) {
-    exp1.s <- qpIPF(exp1.s, cliques)
-    exp2.s <- qpIPF(exp2.s, cliques)
+    y1.s <- qpIPF(y1.s, cliques)
+    y2.s <- qpIPF(y2.s, cliques)
   }
+
+  k <- y1.num + y2.num - gene.num - 1
 
   if (exact) {
-    s  <- ((exp1.num-1)*exp1.s + (exp2.num-1)*exp2.s) / (exp1.num + exp2.num - 2)
-    t2 <- ((exp1.num*exp2.num) / (exp1.num+exp2.num)) * (exp.diff %*% solve(s) %*% exp.diff)
+    s  <- ((y1.num-1)*y1.s + (y2.num-1)*y2.s) / (y1.num + y2.num - 2)
+    t2 <- ((y1.num*y2.num) / (y1.num+y2.num)) * (y.diff %*% solve(s) %*% y.diff)
 
-    if (is.null(cliques)) {
-      c <- exp1.num + exp2.num - gene.num - 1
-      t.obs <- t2 * c / (gene.num * (exp1.num + exp2.num - 2))
-      alpha.obs <- 1 - pf(t.obs, gene.num, c)
-      list(alpha.obs=alpha.obs, t.obs=t.obs)
-    } else {
-      as.numeric(t2)
-    }
+    t.obs <- as.vector( t2 * k / (gene.num * (y1.num + y2.num - 2)) )
+    alpha.obs <- 1 - pf(t.obs, gene.num, k)
+
+    list(alpha.obs=alpha.obs,
+         t.obs=t.obs,
+         df=c(gene.num, k))
+
   } else {
-    s <- exp1.s/exp1.num + exp2.s/exp2.num
-    as.numeric(exp.diff %*% solve(s) %*% exp.diff)
+
+    s <- y1.s/y1.num + y2.s/y2.num
+    t2 <- as.vector( ((y1.num*y2.num) / (y1.num+y2.num)) * (y.diff %*% solve(s) %*% y.diff) )
+
+    list(t.obs=t2,
+         df=c(gene.num, k))
   }
+}
+
+.hotePaired <- function(y1, y2, cli.moral) {
+  y1.num <- nrow(y1)
+
+  y.diff <- y1 - y2
+  y.bar <- colMeans(y.diff)
+  y.centr <- y.diff - y.bar
+  y.s <- qpIPF(cov(y.diff), cli.moral)
+  t2 <- y1.num * (t(y.bar) %*% solve(y.s) %*% y.bar)
+
+  p <- ncol(y1)
+  np <- y1.num - p
+
+  t2 * np / (p * (y1.num-1))
 }

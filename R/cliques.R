@@ -1,53 +1,82 @@
-clique.var.test <- function(exp1, exp2, dag, alpha) {
-  l <- .procParams(exp1, exp2, dag)
-  .runCliqueVarTest(l$exp1, l$exp2, l$graph, alpha)
+clique.var.test <- function(y1, y2, dag, alpha) {
+  l <- .procParams(y1, y2, dag)
+  .runCliqueVarTest(l$y1, l$y2, l$graph, alpha)
 }
 
-clique.mean.test <- function(exp1, exp2, dag, alpha, perm.num=1000) {
-  l <- .procParams(exp1, exp2, dag)
-  exp1 <- l$exp1
-  exp2 <- l$exp2
+clique.mean.test <- function(y1, y2, dag, alpha, perm.num=1000, paired=FALSE) {
+  l <- .procParams(y1, y2, dag)
+  y1 <- l$y1
+  y2 <- l$y2
 
-  exp.all    <- rbind(exp1, exp2)
-  cli.test   <- .runCliqueVarTest(exp1, exp2, l$graph, alpha)
-  check      <- cli.test$check
+  cli.test   <- .runCliqueVarTest(y1, y2, l$graph, alpha)
+  check      <- cli.test$var.equal
   cliques    <- cli.test$cliques
   clique.num <- length(cliques)
 
   alpha.obs  <- vector("numeric", clique.num)
   t.obs      <- vector("numeric", clique.num)
   for (i in seq_len(clique.num)) {
-    cli      <- unlist(cliques[i]) #TODO: cliques[[i]] ?
-    exp1.cli <- exp1[,cli]
-    exp2.cli <- exp2[,cli]
+    cli    <- unlist(cliques[i])
+    y1.cli <- y1[,cli, drop=FALSE]
+    y2.cli <- y2[,cli, drop=FALSE]
 
     if (length(cli) != 1) {
-      if (check[i])
-        r <- .mult.test(exp1.cli, exp2.cli, perm.num)
-      else
-        r <- .hote(exp1.cli, exp2.cli, TRUE)
+      if (paired) {
+
+        y.diff <- y1 - y2
+        y.bar <- colMeans(y.diff)
+        y.centr <- y.diff - y.bar
+        y.num <- nrow(y1)
+        y.s <- (t(y.centr) %*% y.centr) / y.num
+        t2 <- y.num * (t(y.bar) %*% solve(y.s) %*% y.bar)
+
+        p <- ncol(y1)
+        np <- y.num - p
+        t.value <- t2 * np / (p * (y.num-1))
+
+        r <- list(alpha.obs=1-pf(t.value, p, np),
+                  t.obs=t.value)
+
+      } else if (check[i]) {
+        r <- .mult.test(y1.cli, y2.cli, perm.num)
+
+      } else {
+        r <- .hote(y1.cli, y2.cli, TRUE)
+      }
 
       alpha.obs[i] <- r$alpha.obs
       t.obs[i]     <- r$t.obs
+
     } else {
-      r            <- t.test(exp1.cli, exp2.cli)
+      r            <- t.test(y1.cli, y2.cli, paired=paired)
       alpha.obs[i] <- r$p.value
       t.obs[i]     <- r$statistic
     }
   }
 
-  list(alpha.obs=as.numeric(alpha.obs), cliques=cliques, check=check, graph=cli.test$graph, t.obs=t.obs)
+  l <- list(t.value=t.obs,
+            p.value=as.numeric(alpha.obs))
+
+  if (!paired) {
+    l$lambda.value <- cli.test$lambda.value
+    l$p.value.var  <- cli.test$p.value
+    l$var.equal    <- check
+  }
+
+  l$cliques <- cliques
+  l$graph   <- cli.test$graph
+  return(l)
 }
 
-.runCliqueVarTest <- function(exp1, exp2, graph, alpha) {
+.runCliqueVarTest <- function(y1, y2, graph, alpha) {
   cliques <- graph$cli.tg$maxCliques
   maxCliqueSize <- max(sapply(cliques, length))
-  if (nrow(exp1) <= maxCliqueSize)
-    stop("exp1 should have more than ", maxCliqueSize, " rows (samples)")
-  else if (nrow(exp2) <= maxCliqueSize)
-    stop("exp2 should have more than ", maxCliqueSize, " rows (samples)")
+  if (nrow(y1) <= maxCliqueSize)
+    stop("y1 should have more than ", maxCliqueSize, " rows (samples)")
+  else if (nrow(y2) <= maxCliqueSize)
+    stop("y2 should have more than ", maxCliqueSize, " rows (samples)")
 
-  cov <- .estimateCov(exp1, exp2)
+  cov <- .estimateCov(y1, y2)
 
   clique.num <- length(cliques)
 
@@ -59,26 +88,24 @@ clique.mean.test <- function(exp1, exp2, dag, alpha, perm.num=1000) {
     cli <- unlist(cliques[i])
     p   <- length(cli)
 
-    s1.hat <- cov$s1[cli, cli]
-    s2.hat <- cov$s2[cli, cli]
-    s.hat  <- cov$s[cli, cli]
+    s1.hat <- cov$s1[cli, cli, drop=FALSE]
+    s2.hat <- cov$s2[cli, cli, drop=FALSE]
+    s.hat  <- cov$s[cli, cli, drop=FALSE]
 
-    if (p == 1) {
-      s1.det <- s1.hat
-      s2.det <- s2.hat
-      s.det  <- s.hat
-    } else {
-      s1.det <- det(s1.hat)
-      s2.det <- det(s2.hat)
-      s.det  <- det(s.hat)
-    }
+    s1.det <- det(s1.hat)
+    s2.det <- det(s2.hat)
+    s.det  <- det(s.hat)
 
-    lambda.obs[i] <- nrow(exp1)*log(s.det/s1.det) + nrow(exp2)*log(s.det/s2.det)
+    lambda.obs[i] <- nrow(y1)*log(s.det/s1.det) + nrow(y2)*log(s.det/s2.det)
     alpha.obs[i]  <- 1 - pchisq(lambda.obs[i], p*(p+1)/2)
 
     if (alpha.obs[i] <= alpha)
       check[i] <- TRUE
   }
 
-  list(alpha.obs=alpha.obs, cliques=cliques, check=check, graph=graph$tg, lambda.obs=lambda.obs)
+  list(lambda.value=lambda.obs,
+       p.value=alpha.obs,
+       cliques=cliques,
+       var.equal=check,
+       graph=graph$tg)
 }
