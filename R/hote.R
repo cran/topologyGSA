@@ -44,7 +44,7 @@
   y.bar <- colMeans(y.diff)
   y.centr <- y.diff - y.bar
   y.s <- qpIPF(cov(y.diff), cli.moral)
-  t2 <- y1.num * (t(y.bar) %*% solve(y.s) %*% y.bar)
+  t2 <- as.numeric(y1.num * (t(y.bar) %*% solve(y.s) %*% y.bar))
 
   p <- ncol(y1)
   np <- y1.num - p

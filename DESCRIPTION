@@ -1,6 +1,6 @@
 Package: topologyGSA
-Version: 1.4.0
-Date: 2013-10-23
+Version: 1.4.1
+Date: 2013-11-19
 Title: Gene Set Analysis Exploiting Pathway Topology
 Author: Sofia Massa, Gabriele Sales
 Maintainer: Gabriele Sales <gabriele.sales@unipd.it>
@@ -14,7 +14,7 @@ Depends: gRbase, qpgraph, fields
 Suggests: Rgraphviz
 License: AGPL-3
 LazyLoad: yes
-Packaged: 2013-10-23 15:43:37 UTC; border
+Packaged: 2013-11-19 16:29:31 UTC; sales
 NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2013-10-23 18:34:12
+Date/Publication: 2013-11-19 19:21:34
