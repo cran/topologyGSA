@@ -37,10 +37,16 @@
   }
 }
 
-.hotePaired <- function(y1, y2, cli.moral) {
+.hotePaired <- function(y1, y2, cli.moral, perm=FALSE) {
   y1.num <- nrow(y1)
-
   y.diff <- y1 - y2
+
+  if (perm) {
+    signs <- matrix(sample(c(1,-1), y1.num*ncol(y1), replace=TRUE),
+                    nrow=y1.num)
+    y.diff <- y.diff * signs
+  }
+
   y.bar <- colMeans(y.diff)
   y.centr <- y.diff - y.bar
   y.s <- qpIPF(cov(y.diff), cli.moral)

@@ -1,13 +1,13 @@
 73f1eb20517c55bf9493b7dd6e480788 *COPYING
-08c5c30aee71437a5c41c9ba74c9ff29 *DESCRIPTION
+e00f9acb6c0aacf1b33b588aea4673cd *DESCRIPTION
 6f6a7477c42aac7288a0c85b37fc54e5 *NAMESPACE
 17eb810bbd61989e3a8faf854144feef *R/cliques.R
 faec366ead6f4966f720254e72c7c648 *R/cov.R
 619cd6d2ddba28f4c0a0c97408a4cb1b *R/graph.R
-8c23ab53dff726ac7d41bbf2c2c321ea *R/hote.R
+27f3ed6014dd05c1aeb477f7b620180f *R/hote.R
 34fb0fa2be82b598aedda16f69b62813 *R/multt.R
 a397b5b75c5c0dcf10deab8cdb488ce8 *R/params.R
-d39b53c2cf7fd585e184e090ec6d8ce0 *R/pathway.R
+d354eaa913beea9ce58e4ceec6b51c65 *R/pathway.R
 eae334ea46fc265b242fb8c6e581842b *R/render.R
 dd03eee5544ea21d3f1b6156c3399384 *data/examples.RData
 d603024fae3ad44a951f754360c9653d *man/clique.mean.test.Rd

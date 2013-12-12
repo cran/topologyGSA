@@ -29,9 +29,8 @@ pathway.mean.test <- function(y1, y2, dag, alpha,
     t.obs <- .hotePaired(y1, y2, cli.moral)
 
     stat.perm <- vector("numeric", perm.num)
-    for (i in seq_len(perm.num)) {
-      stat.perm[i] <- .hotePaired(y1, sample(y2), cli.moral)
-    }
+    for (i in seq_len(perm.num))
+      stat.perm[i] <- .hotePaired(y1, y2, cli.moral, perm=TRUE)
 
     p.value <- sum(stat.perm >= t.obs) / perm.num
 
