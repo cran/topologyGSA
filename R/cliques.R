@@ -69,7 +69,7 @@ clique.mean.test <- function(y1, y2, dag, alpha, perm.num=1000, paired=FALSE) {
 }
 
 .runCliqueVarTest <- function(y1, y2, graph, alpha) {
-  cliques <- graph$cli.tg$maxCliques
+  cliques <- graph$cli.tg
   maxCliqueSize <- max(sapply(cliques, length))
   if (nrow(y1) <= maxCliqueSize)
     stop("y1 should have more than ", maxCliqueSize, " rows (samples)")

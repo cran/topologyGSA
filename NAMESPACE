@@ -1,4 +1,5 @@
-import(gRbase, qpgraph, fields)
+import(graph, gRbase, qpgraph, fields)
+
 export(clique.var.test, clique.mean.test,
        pathway.var.test, pathway.mean.test,
        render.significant.cliques)

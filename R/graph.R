@@ -5,7 +5,7 @@
 
   list(adj.moral = adj.moral,
        cli.moral = qpGetCliques(adj.moral, verbose=F),
-       cli.tg    = maxClique(tg),
+       cli.tg    = getCliques(tg),
        moral     = moral,
        tg        = tg)
 }
