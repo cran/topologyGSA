@@ -2,4 +2,6 @@ import(graph, gRbase, qpgraph, fields)
 
 export(clique.var.test, clique.mean.test,
        pathway.var.test, pathway.mean.test,
-       render.significant.cliques)
+       render.significant.cliques,
+       print.clique.var.test, print.clique.mean.test,
+       print.pathway.var.test, print.pathway.mean.test)

@@ -1,9 +1,17 @@
 clique.var.test <- function(y1, y2, dag, alpha) {
-  l <- .procParams(y1, y2, dag)
-  .runCliqueVarTest(l$y1, l$y2, l$graph, alpha)
+  vs <- c(substitute(y1), substitute(y2), substitute(dag))
+
+  p <- .procParams(y1, y2, dag)
+  l <- .runCliqueVarTest(p$y1, p$y2, p$graph, alpha)
+
+  l$var.names <- vs
+  attr(l, "class") <- "clique.var.test"
+  return(l)
 }
 
 clique.mean.test <- function(y1, y2, dag, alpha, perm.num=1000, paired=FALSE) {
+  vs <- c(substitute(y1), substitute(y2), substitute(dag))
+
   l <- .procParams(y1, y2, dag)
   y1 <- l$y1
   y2 <- l$y2
@@ -65,6 +73,9 @@ clique.mean.test <- function(y1, y2, dag, alpha, perm.num=1000, paired=FALSE) {
 
   l$cliques <- cliques
   l$graph   <- cli.test$graph
+
+  l$var.names <- vs
+  attr(l, "class") <- "clique.mean.test"
   return(l)
 }
 

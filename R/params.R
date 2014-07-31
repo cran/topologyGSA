@@ -20,6 +20,6 @@
   y2  <- y2[,common,drop=FALSE]
   dag   <- subGraph(common, dag)
   graph <- .processGraph(dag)
-  
+
   list(y1=y1, y2=y2, graph=graph)
 }

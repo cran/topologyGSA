@@ -1,5 +1,7 @@
 pathway.var.test <- function(y1, y2, dag, alpha,
                              variance=FALSE, s1=NULL, s2=NULL) {
+  vs <- c(substitute(y1), substitute(y2), substitute(dag))
+
   l  <- .procParams(y1, y2, dag)
   y1 <- l$y1
   y2 <- l$y2
@@ -8,11 +10,15 @@ pathway.var.test <- function(y1, y2, dag, alpha,
   ns            <- nodes(res$graph)
   res$cli.moral <- lapply(res$cli.moral, function(ixs) ns[ixs])
 
-  res
+  res$var.names <- vs
+  attr(res, "class") <- "pathway.var.test"
+  return(res)
 }
 
 pathway.mean.test <- function(y1, y2, dag, alpha,
                               perm.num=10000, variance=TRUE, paired=FALSE) {
+  vs <- c(substitute(y1), substitute(y2), substitute(dag))
+
   l  <- .procParams(y1, y2, dag)
   y1 <- l$y1
   y2 <- l$y2
@@ -34,10 +40,10 @@ pathway.mean.test <- function(y1, y2, dag, alpha,
 
     p.value <- sum(stat.perm >= t.obs) / perm.num
 
-    list(p.value=p.value,
-         cli.moral=cli.moral,
-         graph=l$graph,
-         t.value=t.obs)
+    l <- list(p.value=p.value,
+              cli.moral=cli.moral,
+              graph=l$graph,
+              t.value=t.obs)
 
   } else {
 
@@ -54,17 +60,21 @@ pathway.mean.test <- function(y1, y2, dag, alpha,
 
     p.value <- sum(stat.perm >= s$t.obs) / perm.num
 
-    list(t.value=s$t.obs,
-         df.mean=s$df,
-         p.value=p.value,
-         lambda.value=l$lambda.value,
-         df.var=l$df,
-         p.value.var=l$p.value,
-         qchisq.value=l$qchisq.value,
-         var.equal=var.equal,
-         cli.moral=cli.moral,
-         graph=l$graph)
+    l <- list(t.value=s$t.obs,
+              df.mean=s$df,
+              p.value=p.value,
+              lambda.value=l$lambda.value,
+              df.var=l$df,
+              p.value.var=l$p.value,
+              qchisq.value=l$qchisq.value,
+              var.equal=var.equal,
+              cli.moral=cli.moral,
+              graph=l$graph)
     }
+
+  l$var.names <- vs
+  attr(l, "class") <- "pathway.mean.test"
+  return(l)
 }
 
 .runPathwayVarTest <- function(y1, y2, graph, alpha, variance,
