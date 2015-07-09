@@ -1,12 +1,12 @@
 render.significant.cliques <- function(info, alpha=0.05) {
-  if (!require(Rgraphviz))
+  if (!requireNamespace("Rgraphviz", quietly=TRUE))
     stop("library Rgraphviz is missing")
 
   if (length(edges(info$graph)) == 0)
     stop("cannot render a graph with no edges")
 
-  g           <- layoutGraph(info$graph)
-  check <- info$p.value < alpha
+  g           <- Rgraphviz::layoutGraph(info$graph)
+  check       <- info$p.value < alpha
   significant <- info$cliques[check]
   pvalues     <- info$p.value[check]
 
@@ -43,7 +43,7 @@ render.significant.cliques <- function(info, alpha=0.05) {
     nodeRenderInfo(g) <- list(fill=colors)
   }
 
-  renderGraph(g)
+  Rgraphviz::renderGraph(g)
   if (length(significant))
     fields::image.plot(legend.only=TRUE,
                        legend.shrink=0.3,

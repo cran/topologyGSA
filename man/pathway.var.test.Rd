@@ -16,8 +16,8 @@ The genes in the two experimental conditions must be the same.}
 \item{alpha}{significance level of the test.}
 \item{variance}{logical flag. If \code{TRUE} the estimates of the
   covariance matrices are included in the result.}
-\item{s1}{y1 covariance matrix estimation. }  
-\item{s2}{y2 covariance matrix estimation.  }
+\item{s1}{y1 covariance matrix estimation.}
+\item{s2}{y2 covariance matrix estimation.}
 }
 \details{The graph of a pathway is first converted into a DAG and then
   into a moral graph. The data is modelled with two Gaussian graphical
@@ -28,6 +28,20 @@ The genes in the two experimental conditions must be the same.}
   The expression data may contain some genes differing
   from those in the pathway: in such case the function automatically takes
   the intersection between the two gene sets.
+
+  A necessary condition for the existence of the covariance estimates is that
+  the number of statistical units (samples) is greater than the number of
+  variables. If this is not the case, penalized techniques for estimating
+  \eqn{\hat{\Sigma}_{1}^{-1}}{s1^(-1)} and \eqn{\hat{\Sigma}_{2}^{-1}}{s2^(-1)}
+  have to be employed, that are currently not provided by the package. In theses
+  cases, one can perform penalized estimation of
+  \eqn{\hat{\Sigma}_{1}^{-1}}{s1^(-1)} and \eqn{\hat{\Sigma}_{2}^{-1}}{s2^(-1)}
+  outside \pkg{topologyGSA}, and then provide such estimates as input arguments
+  to the function \code{pathway.var.test} to compute the value of the test for
+  homogeneity. In this case, computation of the p-value deserves attention,
+  as standard results on the asymptotic distribution of the test statistic may
+  no longer be valid. Therefore, computation of the p-value has to be dealt
+  with by the user.
 
   This function requires \code{gRBase} and \code{qpgraph} packages.
 }
