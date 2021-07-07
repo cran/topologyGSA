@@ -50,7 +50,7 @@ The genes in the two experimental conditions must be the same.}
 
 \references{
 Massa, M.S., Chiogna, M., Romualdi, C. (2010). Gene set analysis exploiting the topology of a pathway. BMC Systems Biology, 4:121
-\url{http://www.biomedcentral.com/1752-0509/4/121}
+\url{https://bmcsystbiol.biomedcentral.com/articles/10.1186/1752-0509-4-121}
 }
 \seealso{
 \code{\link{pathway.var.test}},\code{\link{pathway.mean.test}},
