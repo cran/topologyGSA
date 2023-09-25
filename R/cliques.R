@@ -118,5 +118,5 @@ clique.mean.test <- function(y1, y2, dag, alpha, perm.num=1000, paired=FALSE) {
        p.value=alpha.obs,
        cliques=cliques,
        var.equal=check,
-       graph=graph$tg)
+       graph=as_graphnel(graph$tg))
 }

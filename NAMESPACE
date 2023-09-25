@@ -1,4 +1,6 @@
-import(graph, gRbase, qpgraph, fields)
+import(graph, qpgraph, fields)
+importFrom(gRbase, moralize, triangulate, getCliques)
+importFrom(igraph, graph_from_graphnel, as_graphnel)
 importFrom(methods, as)
 importFrom(stats, cov, pchisq, pf, qchisq, t.test)
 

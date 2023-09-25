@@ -125,6 +125,6 @@ pathway.mean.test <- function(y1, y2, dag, alpha,
     res$s2 <- s2.hat
   }
 
-  res$graph <- graph$moral
+  res$graph <- as_graphnel(graph$moral)
   return(res)
 }

@@ -1,5 +1,6 @@
 .processGraph <- function(dag) {
-  moral     <- moralize(dag)
+  graph     <- graph_from_graphnel(dag)
+  moral     <- moralize(graph)
   tg        <- triangulate(moral)
   adj.moral <- as(moral, "matrix")
 
